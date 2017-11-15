@@ -9,9 +9,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import br.com.caelum.financas.modelo.Categoria;
 import br.com.caelum.financas.modelo.Conta;
 import br.com.caelum.financas.modelo.Movimentacao;
 import br.com.caelum.financas.modelo.TipoMovimentacao;
+import br.com.caelum.financas.modelo.ValorPorMesEAno;
 
 @Stateless
 public class MovimentacaoDao {
@@ -83,6 +85,28 @@ public class MovimentacaoDao {
 		
 	}
 			
-			
+	public List<ValorPorMesEAno> listaMesesComMovimentacoes(Conta conta, TipoMovimentacao tipo){
+		
+		String jpql = "select br.com.caelum.financas.modelo.ValorPorMesEAno(month(m.data), year(m.data), sum(m.valor)) " +
+		              "  from Movimentacao m " + 
+				      " where m.conta = :conta " + 
+		              "   and m.tipoMovimentacao = :tipo " +
+				      " group by year(m.data), month(m.data) " +
+		              " order by sum(m.valor) desc " ;
+		TypedQuery<ValorPorMesEAno> query = this.manager.createQuery(jpql, ValorPorMesEAno.class);
+		query.setParameter("conta",conta);
+		query.setParameter("tipo", tipo) ;
+		System.out.println("tamanho: " + query.getResultList().size());
+		return query.getResultList() ;
+		
+	}
+	
+	public List<Movimentacao> listaComCategorias(){
+		
+		return this.manager.createQuery("select m " +
+		                                "  from Movimentacao m " +
+				                        "  left fetch m.categorias", Movimentacao.class).getResultList();
+		
+	}
 
 }
