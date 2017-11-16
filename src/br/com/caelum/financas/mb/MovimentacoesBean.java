@@ -76,8 +76,8 @@ public class MovimentacoesBean implements Serializable {
 		
 		if (this.movimentacoes == null){
 			
-			//this.movimentacoes = movimentacaoDao.lista() ;			
-			this.movimentacoes = movimentacaoDao.listaComCategorias();
+			this.movimentacoes = movimentacaoDao.lista() ;			
+			//this.movimentacoes = movimentacaoDao.listaComCategorias();
 			
 		}
 		

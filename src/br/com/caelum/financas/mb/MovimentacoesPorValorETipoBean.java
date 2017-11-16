@@ -25,7 +25,7 @@ public class MovimentacoesPorValorETipoBean {
 
 	public void lista() {
 		System.out.println("Buscando movimentacoes por valor e tipo");
-		this.movimentacoes = dao.listaPorContaETipo(valor, tipoMovimentacao) ;
+		this.movimentacoes = dao.listaPorValorETipo(valor, tipoMovimentacao) ;
 	}
 
 	public BigDecimal getValor() {

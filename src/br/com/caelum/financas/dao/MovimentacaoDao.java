@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -18,10 +19,12 @@ import br.com.caelum.financas.modelo.ValorPorMesEAno;
 @Stateless
 public class MovimentacaoDao {
 	
-	@PersistenceContext
+	//@PersistenceContext
+	@Inject
 	EntityManager manager;
 
 	public void adiciona(Movimentacao movimentacao) {
+		manager.joinTransaction();
 		this.manager.persist(movimentacao);
 	}
 
@@ -34,6 +37,7 @@ public class MovimentacaoDao {
 	}
 
 	public void remove(Movimentacao movimentacao) {
+		manager.joinTransaction();
 		Movimentacao movimentacaoParaRemover = this.manager.find(Movimentacao.class, movimentacao.getId());
 		this.manager.remove(movimentacaoParaRemover);
 	}
@@ -49,7 +53,8 @@ public class MovimentacaoDao {
 		
 	}
 	
-	public List<Movimentacao> listaPorContaETipo(BigDecimal valor, TipoMovimentacao tipo){
+	
+	public List<Movimentacao> listaPorValorETipo(BigDecimal valor, TipoMovimentacao tipo){
 		
 		String jpql = "select m from Movimentacao m " +
 	                  " where m.valor <= :valor " +
@@ -58,6 +63,9 @@ public class MovimentacaoDao {
 	Query query = this.manager.createQuery(jpql);
 	query.setParameter("valor", valor);
 	query.setParameter("tipo", tipo) ;
+	
+	query.setHint("org.hibernate.cacheable", "true");
+	
 	return query.getResultList();
 	
 	}
@@ -105,7 +113,7 @@ public class MovimentacaoDao {
 		
 		return this.manager.createQuery("select m " +
 		                                "  from Movimentacao m " +
-				                        "  left fetch m.categorias", Movimentacao.class).getResultList();
+				                        "  left join fetch m.categorias", Movimentacao.class).getResultList();
 		
 	}
 
